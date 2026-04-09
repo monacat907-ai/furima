@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>フリマ販売管理</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --bg: #f7f6f3;
+  --surface: #ffffff;
+  --surface2: #f0efe9;
+  --border: rgba(0,0,0,0.08);
+  --border-strong: rgba(0,0,0,0.15);
+  --text: #1a1a18;
+  --text-2: #6b6b65;
+  --text-3: #a8a8a2;
+  --accent: #2a5cff;
+  --accent-light: #eef1ff;
+  --pay-bg: #fff1ef;
+  --pay-text: #c0391b;
+  --mer-bg: #edf7f0;
+  --mer-text: #1a7a3c;
+  --other-bg: #f2eeff;
+  --other-text: #5b3fc2;
+  --sold-bg: #fff8e6;
+  --sold-text: #a06000;
+  --undo-bg: #fdf4e7;
+  --undo-text: #8a5a00;
+  --danger: #d93025;
+  --radius: 10px;
+  --radius-lg: 16px;
+  --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+  --font: 'Noto Sans JP', sans-serif;
+  --mono: 'JetBrains Mono', monospace;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* Layout */
+.app {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 0 0 80px;
+}
+
+/* Header */
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(247,246,243,0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.header-logo {
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  color: var(--text);
+  flex: 1;
+}
+.header-logo span {
+  color: var(--accent);
+}
+.btn-csv {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--surface);
+  color: var(--text-2);
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-size: 14px;
+  font-family: var(--font);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.btn-csv:hover { background: var(--surface2); color: var(--text); }
+.btn-add {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-family: var(--font);
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity 0.15s, transform 0.1s;
+}
+.btn-add:hover { opacity: 0.88; }
+.btn-add:active { transform: scale(0.97); }
+
+/* Stats */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  padding: 16px 20px 0;
+}
+.stat {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px 10px;
+  text-align: center;
+}
+.stat-label {
+  font-size: 11px;
+  color: var(--text-2);
+  margin-bottom: 4px;
+  white-space: nowrap;
+}
+.stat-val {
+  font-size: 24px;
+  font-weight: 700;
+  font-family: var(--mono);
+  color: var(--text);
+  letter-spacing: -1px;
+}
+
+/* Tabs */
+.tabs {
+  display: flex;
+  gap: 0;
+  padding: 16px 20px 0;
+  border-bottom: 1px solid var(--border);
+  margin: 0 0px;
+}
+.tab {
+  padding: 8px 16px;
+  font-size: 13px;
+  font-family: var(--font);
+  cursor: pointer;
+  color: var(--text-2);
+  border: none;
+  background: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition: color 0.15s;
+  font-weight: 500;
+}
+.tab:hover { color: var(--text); }
+.tab.active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
+/* Page content */
+.page { display: none; padding: 16px 20px 0; }
+.page.active { display: block; }
+
+/* Filters */
+.filters {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+.filter-btn {
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: 20px;
+  padding: 5px 14px;
+  font-size: 12px;
+  font-family: var(--font);
+  cursor: pointer;
+  color: var(--text-2);
+  transition: all 0.15s;
+}
+.filter-btn:hover { border-color: var(--accent); color: var(--accent); }
+.filter-btn.active {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+
+/* Bulk bar */
+.bulk-bar {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: var(--accent-light);
+  border: 1px solid rgba(42,92,255,0.2);
+  border-radius: var(--radius);
+  margin-bottom: 10px;
+}
+.bulk-bar.show { display: flex; }
+.bulk-count { font-size: 13px; color: var(--accent); flex: 1; font-weight: 500; }
+.btn-sm {
+  border-radius: 7px;
+  padding: 5px 12px;
+  font-size: 12px;
+  font-family: var(--font);
+  cursor: pointer;
+  border: 1px solid var(--border-strong);
+  background: var(--surface);
+  color: var(--text-2);
+  transition: all 0.15s;
+}
+.btn-sm:hover { background: var(--surface2); }
+.btn-sm-danger {
+  background: #fff1f0;
+  color: var(--danger);
+  border-color: rgba(217,48,37,0.2);
+  font-weight: 500;
+}
+.btn-sm-danger:hover { background: #ffe0de; }
+.btn-sm-primary {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+  font-weight: 500;
+}
+.btn-sm-primary:hover { opacity: 0.88; }
+
+/* Item list */
+.list { display: flex; flex-direction:column; gap: 6px; }
+.item {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 11px 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: border-color 0.15s, background 0.15s;
+}
+.item.checked {
+  border-color: rgba(42,92,255,0.35);
+  background: var(--accent-light);
+}
+.cb {
+  width: 17px;
+  height: 17px;
+  flex-shrink: 0;
+  cursor: pointer;
+  accent-color: var(--accent);
+  border-radius: 4px;
+}
+.badge {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 20px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  letter-spacing: 0.2px;
+}
+.badge-paypay { background: var(--pay-bg); color: var(--pay-text); }
+.badge-mercari { background: var(--mer-bg); color: var(--mer-text); }
+.badge-other { background: var(--other-bg); color: var(--other-text); }
+.item-code {
+  font-size: 15px;
+  font-weight: 600;
+  font-family: var(--mono);
+  color: var(--text);
+  flex: 1;
+  letter-spacing: -0.3px;
+}
+.item-date { font-size: 11px; color: var(--text-3); white-space: nowrap; }
+.empty {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text-3);
+  font-size: 14px;
+}
+.empty-icon { font-size: 32px; margin-bottom: 8px; }
+
+/* Sold page */
+.sold-controls { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+.sel {
+  padding: 7px 12px;
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  font-size: 13px;
+  font-family: var(--font);
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+}
+.sold-summary {
+  display: grid;
+  grid-template-columns: repeat(4,1fr);
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.sold-group { margin-bottom: 16px; }
+.sold-group-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-2);
+  padding: 4px 0 8px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+.cnt-badge {
+  font-size: 11px;
+  background: var(--surface2);
+  color: var(--text-2);
+  padding: 2px 9px;
+  border-radius: 20px;
+  font-weight: 500;
+  text-transform: none;
+  letter-spacing: 0;
+}
+.sold-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+}
+.sold-item:last-child { border-bottom: none; }
+.sold-code { font-size: 13px; font-family: var(--mono); font-weight: 600; color: var(--text); flex: 1; }
+.sold-date { font-size: 11px; color: var(--text-3); white-space: nowrap; }
+
+/* History page */
+.hist-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  margin-bottom: 12px;
+}
+.btn-clear {
+  background: none;
+  border: 1px solid var(--border-strong);
+  border-radius: 7px;
+  padding: 5px 12px;
+  font-size: 12px;
+  font-family: var(--font);
+  cursor: pointer;
+  color: var(--text-3);
+}
+.btn-clear:hover { color: var(--danger); border-color: rgba(217,48,37,0.3); }
+.hist-group { margin-bottom: 16px; }
+.hist-date-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-3);
+  padding: 4px 0 8px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 6px;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+}
+.hist-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+}
+.hist-item:last-child { border-bottom: none; }
+.hist-action {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 20px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  letter-spacing: 0.3px;
+}
+.hist-add { background: var(--mer-bg); color: var(--mer-text); }
+.hist-sold { background: var(--sold-bg); color: var(--sold-text); }
+.hist-undo { background: var(--undo-bg); color: var(--undo-text); }
+.hist-del { background: #fff1f0; color: var(--danger); }
+.hist-code { font-size: 13px; font-family: var(--mono); font-weight: 600; color: var(--text); flex: 1; }
+.hist-plat { font-size: 11px; color: var(--text-2); white-space: nowrap; }
+.hist-time { font-size: 11px; color: var(--text-3); white-space: nowrap; }
+.btn-undo {
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: 7px;
+  padding: 4px 10px;
+  font-size: 11px;
+  font-family: var(--font);
+  cursor: pointer;
+  color: var(--text-2);
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.btn-undo:hover:not(:disabled) {
+  background: var(--accent-light);
+  color: var(--accent);
+  border-color: rgba(42,92,255,0.3);
+}
+.btn-undo:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+.btn-undo.undone {
+  background: var(--surface2);
+  color: var(--text-3);
+  font-size: 10px;
+}
+
+/* Modal */
+.modal-bg {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.35);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 200;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.modal-bg.open { display: flex; }
+.modal {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  width: min(360px, 100%);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+  animation: modal-in 0.18s ease;
+}
+@keyframes modal-in {
+  from { transform: translateY(8px) scale(0.98); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}
+.modal-title {
+  font-size: 17px;
+  font-weight: 700;
+  margin-bottom: 20px;
+  color: var(--text);
+}
+.field { margin-bottom: 14px; }
+.field label {
+  font-size: 12px;
+  color: var(--text-2);
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 500;
+}
+.field input, .field select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  transition: border-color 0.15s;
+}
+.field input:focus, .field select:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(42,92,255,0.12);
+}
+.field input.mono { font-family: var(--mono); font-size: 15px; letter-spacing: -0.3px; }
+.other-field { display: none; margin-top: 8px; }
+.other-field.show { display: block; }
+.modal-btns { display: flex; gap: 8px; margin-top: 20px; }
+.btn-modal-cancel {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: var(--font);
+  cursor: pointer;
+  background: none;
+  color: var(--text-2);
+}
+.btn-modal-cancel:hover { background: var(--surface2); }
+.btn-modal-save {
+  flex: 2;
+  padding: 10px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: var(--font);
+  font-weight: 700;
+  cursor: pointer;
+  background: var(--accent);
+  color: #fff;
+  transition: opacity 0.15s;
+}
+.btn-modal-save:hover { opacity: 0.88; }
+
+/* Toast */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(16px);
+  background: #1a1a18;
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s, transform 0.2s;
+  z-index: 999;
+  white-space: nowrap;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+}
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.btn-export-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  cursor: pointer;
+  transition: all 0.15s;
+  text-align: left;
+  width: 100%;
+  font-family: var(--font);
+}
+.btn-export-item:hover { background: var(--accent-light); border-color: rgba(42,92,255,0.3); }
+.export-icon { font-size: 22px; flex-shrink: 0; }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 3px; }
+
+/* Responsive */
+@media (max-width: 480px) {
+  .stats { grid-template-columns: repeat(2,1fr); }
+  .sold-summary { grid-template-columns: repeat(2,1fr); }
+  .hist-plat { display: none; }
+  .stat-val { font-size: 20px; }
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="header">
+    <div class="header-logo">フリマ<span>管理</span></div>
+    <button class="btn-csv" onclick="openExportModal()" title="CSVで書き出す">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 10v2h10v-2M7 1v8M4 6l3 3 3-3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      書き出し
+    </button>
+    <button class="btn-add" onclick="openModal()">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1v12M1 7h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      追加
+    </button>
+  </header>
+
+  <div class="stats">
+    <div class="stat"><div class="stat-label">在庫件数</div><div class="stat-val" id="s-total">0</div></div>
+    <div class="stat"><div class="stat-label">PayPay</div><div class="stat-val" id="s-pay">0</div></div>
+    <div class="stat"><div class="stat-label">メルカリ</div><div class="stat-val" id="s-mer">0</div></div>
+    <div class="stat"><div class="stat-label">売却済</div><div class="stat-val" id="s-sold">0</div></div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('list',this)">一覧</button>
+    <button class="tab" onclick="switchTab('sold',this)">販売履歴</button>
+    <button class="tab" onclick="switchTab('hist',this)">操作履歴</button>
+  </div>
+
+  <!-- 一覧 -->
+  <div id="page-list" class="page active">
+    <div class="filters">
+      <button class="filter-btn active" onclick="setFilter('all',this)">すべて</button>
+      <button class="filter-btn" onclick="setFilter('paypay',this)">PayPay</button>
+      <button class="filter-btn" onclick="setFilter('mercari',this)">メルカリ</button>
+      <button class="filter-btn" onclick="setFilter('other',this)">その他</button>
+    </div>
+    <div class="bulk-bar" id="bulk-bar">
+      <span class="bulk-count" id="bulk-count">0件選択中</span>
+      <button class="btn-sm" onclick="clearChecks()">解除</button>
+      <button class="btn-sm btn-sm-primary" onclick="bulkSold()">売却済みにする</button>
+    </div>
+    <div class="list" id="list"></div>
+  </div>
+
+  <!-- 販売履歴 -->
+  <div id="page-sold" class="page">
+    <div class="sold-controls">
+      <select class="sel" id="sold-view" onchange="renderSold()">
+        <option value="month">月別</option>
+        <option value="year">年別</option>
+      </select>
+      <select class="sel" id="sold-plat-filter" onchange="renderSold()">
+        <option value="all">すべて</option>
+        <option value="paypay">PayPay</option>
+        <option value="mercari">メルカリ</option>
+        <option value="other">その他</option>
+      </select>
+    </div>
+    <div class="sold-summary" id="sold-summary"></div>
+    <div id="sold-list"></div>
+  </div>
+
+  <!-- 操作履歴 -->
+  <div id="page-hist" class="page">
+    <div class="hist-toolbar">
+      <button class="btn-clear" onclick="clearHist()">履歴をクリア</button>
+    </div>
+    <div id="hist-list"></div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal-bg" id="modal" onclick="closeModal(event)">
+  <div class="modal">
+    <div class="modal-title">商品を追加</div>
+    <div class="field">
+      <label>プラットフォーム</label>
+      <select id="m-plat" onchange="toggleOther()">
+        <option value="paypay">PayPayフリマ</option>
+        <option value="mercari">メルカリ</option>
+        <option value="other">その他</option>
+      </select>
+      <div class="other-field" id="other-wrap">
+        <input id="m-other-name" type="text" placeholder="プラットフォーム名" autocomplete="off"/>
+      </div>
+    </div>
+    <div class="field">
+      <label>管理番号</label>
+      <input id="m-code" type="text" class="mono" placeholder="例: hp012" autocomplete="off"/>
+    </div>
+    <div class="modal-btns">
+      <button class="btn-modal-cancel" onclick="closeModal()">キャンセル</button>
+      <button class="btn-modal-save" onclick="addItem()">追加する</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- Export Modal -->
+<div class="modal-bg" id="export-modal" onclick="closeExportModal(event)">
+  <div class="modal">
+    <div class="modal-title">CSVで書き出し</div>
+    <p style="font-size:13px;color:var(--text-2);margin-bottom:18px;line-height:1.7">書き出したファイルはExcelやメモ帳で開けます。バックアップとして定期的に保存しておくと安心です。</p>
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      <button class="btn-export-item" onclick="exportCSV('items')">
+        <div class="export-icon">📦</div>
+        <div>
+          <div style="font-weight:700;font-size:14px;color:var(--text)">在庫一覧を書き出す</div>
+          <div style="font-size:12px;color:var(--text-2);margin-top:2px">現在の在庫 <span id="exp-items-count">0</span>件</div>
+        </div>
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style="margin-left:auto;flex-shrink:0"><path d="M2 10v2h10v-2M7 1v8M4 6l3 3 3-3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <button class="btn-export-item" onclick="exportCSV('sold')">
+        <div class="export-icon">🏷️</div>
+        <div>
+          <div style="font-weight:700;font-size:14px;color:var(--text)">販売履歴を書き出す</div>
+          <div style="font-size:12px;color:var(--text-2);margin-top:2px">売却済み <span id="exp-sold-count">0</span>件</div>
+        </div>
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style="margin-left:auto;flex-shrink:0"><path d="M2 10v2h10v-2M7 1v8M4 6l3 3 3-3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <button class="btn-export-item" onclick="exportCSV('all')">
+        <div class="export-icon">📋</div>
+        <div>
+          <div style="font-weight:700;font-size:14px;color:var(--text)">すべてまとめて書き出す</div>
+          <div style="font-size:12px;color:var(--text-2);margin-top:2px">在庫 + 販売履歴 全件</div>
+        </div>
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style="margin-left:auto;flex-shrink:0"><path d="M2 10v2h10v-2M7 1v8M4 6l3 3 3-3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </div>
+    <button class="btn-modal-cancel" style="width:100%;margin-top:16px" onclick="closeExportModal()">閉じる</button>
+  </div>
+</div>
+
+<script>
+const PLAT_BADGE = { paypay:'badge-paypay', mercari:'badge-mercari', other:'badge-other' };
+const PLAT_LABEL = { paypay:'PayPay', mercari:'メルカリ' };
+const ACTION_LABEL = { add:'追加', sold:'売却', undo:'取消', del:'削除' };
+const ACTION_CLASS = { add:'hist-add', sold:'hist-sold', undo:'hist-undo', del:'hist-del' };
+
+function platKey(p){ return (p==='paypay'||p==='mercari') ? p : 'other'; }
+function nowStr(){ const n=new Date(); return { date:n.toISOString().slice(0,10), time:n.toTimeString().slice(0,5) }; }
+
+// --- Storage ---
+const STORAGE_KEY = 'furima_data_v1';
+function load(){
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(raw) return JSON.parse(raw);
+  } catch(e){}
+  return null;
+}
+function save(){
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify({ items, soldItems, historyLog, nextId, nextHid })); } catch(e){}
+}
+
+// --- State ---
+let saved = load();
+let items = saved ? saved.items : [
+  {id:1,plat:'paypay',platLabel:'PayPay',code:'hp012',date:'2026-04-09',time:'10:00'},
+  {id:2,plat:'paypay',platLabel:'PayPay',code:'r007',date:'2026-04-09',time:'10:01'},
+  {id:3,plat:'paypay',platLabel:'PayPay',code:'ap012',date:'2026-04-09',time:'10:02'},
+  {id:4,plat:'paypay',platLabel:'PayPay',code:'r025',date:'2026-04-09',time:'10:03'},
+  {id:5,plat:'mercari',platLabel:'メルカリ',code:'hp078',date:'2026-04-09',time:'10:04'},
+  {id:6,plat:'paypay',platLabel:'PayPay',code:'hp080',date:'2026-04-09',time:'10:05'},
+  {id:7,plat:'paypay',platLabel:'PayPay',code:'hp008',date:'2026-04-09',time:'10:06'},
+  {id:8,plat:'paypay',platLabel:'PayPay',code:'fp019',date:'2026-04-09',time:'10:07'},
+  {id:9,plat:'paypay',platLabel:'PayPay',code:'p011',date:'2026-04-09',time:'10:08'},
+  {id:10,plat:'paypay',platLabel:'PayPay',code:'fp058',date:'2026-04-09',time:'10:09'},
+  {id:11,plat:'paypay',platLabel:'PayPay',code:'cp060',date:'2026-04-09',time:'10:10'},
+  {id:12,plat:'mercari',platLabel:'メルカリ',code:'fp042',date:'2026-04-09',time:'10:11'},
+  {id:13,plat:'paypay',platLabel:'PayPay',code:'fp022',date:'2026-04-09',time:'10:12'},
+  {id:14,plat:'paypay',platLabel:'PayPay',code:'hp027',date:'2026-04-09',time:'10:13'},
+  {id:15,plat:'paypay',platLabel:'PayPay',code:'cp054',date:'2026-04-09',time:'10:14'},
+  {id:16,plat:'mercari',platLabel:'メルカリ',code:'hp033',date:'2026-04-09',time:'10:15'},
+];
+let soldItems = saved ? saved.soldItems : [];
+let historyLog = saved ? saved.historyLog : items.map((i,idx)=>({hid:idx+1,action:'add',plat:i.plat,platLabel:i.platLabel,code:i.code,date:i.date,time:i.time,undone:false,snap:null}));
+let nextId = saved ? saved.nextId : 17;
+let nextHid = saved ? saved.nextHid : (historyLog.length + 1);
+let checked = new Set();
+let filter = 'all';
+
+function snapshot(){ return { items: JSON.parse(JSON.stringify(items)), soldItems: JSON.parse(JSON.stringify(soldItems)) }; }
+
+// Toast
+let toastTimer = null;
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>t.classList.remove('show'), 2400);
+}
+
+// Stats
+function renderStats(){
+  document.getElementById('s-total').textContent = items.length;
+  document.getElementById('s-pay').textContent = items.filter(i=>i.plat==='paypay').length;
+  document.getElementById('s-mer').textContent = items.filter(i=>i.plat==='mercari').length;
+  document.getElementById('s-sold').textContent = soldItems.length;
+}
+
+// List
+function renderList(){
+  const show = filter==='all' ? items : items.filter(i=>(filter==='other' ? platKey(i.plat)==='other' : i.plat===filter));
+  const el = document.getElementById('list');
+  if(!show.length){
+    el.innerHTML = '<div class="empty"><div class="empty-icon">📦</div>データがありません</div>';
+  } else {
+    el.innerHTML = show.map(i=>`
+      <div class="item${checked.has(i.id)?' checked':''}">
+        <input type="checkbox" class="cb" ${checked.has(i.id)?'checked':''} onchange="toggleCheck(${i.id},this)"/>
+        <span class="badge ${PLAT_BADGE[platKey(i.plat)]}">${i.platLabel}</span>
+        <span class="item-code">${i.code}</span>
+        <span class="item-date">${i.date.replace(/-/g,'/')}</span>
+      </div>
+    `).join('');
+  }
+  const bar = document.getElementById('bulk-bar');
+  if(checked.size > 0){
+    bar.classList.add('show');
+    document.getElementById('bulk-count').textContent = checked.size + '件選択中';
+  } else {
+    bar.classList.remove('show');
+  }
+}
+
+function toggleCheck(id,el){ if(el.checked) checked.add(id); else checked.delete(id); renderList(); }
+function clearChecks(){ checked.clear(); renderList(); }
+
+function bulkSold(){
+  if(!checked.size) return;
+  const {date,time} = nowStr();
+  const snap = snapshot();
+  const sold = items.filter(i=>checked.has(i.id));
+  sold.forEach(item=>{
+    soldItems.push({...item, soldDate:date, soldTime:time});
+    historyLog.push({hid:nextHid++,action:'sold',plat:item.plat,platLabel:item.platLabel,code:item.code,date,time,undone:false,snap});
+  });
+  items = items.filter(i=>!checked.has(i.id));
+  checked.clear();
+  save(); render();
+  showToast(sold.length + '件を売却済みにしました');
+}
+
+// Sold
+function renderSold(){
+  const view = document.getElementById('sold-view').value;
+  const pf = document.getElementById('sold-plat-filter').value;
+  let filtered = pf==='all' ? soldItems : soldItems.filter(i=>(pf==='other' ? platKey(i.plat)==='other' : i.plat===pf));
+  const total=filtered.length, pay=filtered.filter(i=>i.plat==='paypay').length, mer=filtered.filter(i=>i.plat==='mercari').length, oth=filtered.filter(i=>platKey(i.plat)==='other').length;
+  document.getElementById('sold-summary').innerHTML = `
+    <div class="stat"><div class="stat-label">合計</div><div class="stat-val">${total}</div></div>
+    <div class="stat"><div class="stat-label">PayPay</div><div class="stat-val">${pay}</div></div>
+    <div class="stat"><div class="stat-label">メルカリ</div><div class="stat-val">${mer}</div></div>
+    <div class="stat"><div class="stat-label">その他</div><div class="stat-val">${oth}</div></div>
+  `;
+  if(!filtered.length){ document.getElementById('sold-list').innerHTML='<div class="empty"><div class="empty-icon">🏷️</div>販売履歴がありません</div>'; return; }
+  const grouped = {};
+  filtered.forEach(i=>{ const k=view==='month'?i.soldDate.slice(0,7):i.soldDate.slice(0,4); if(!grouped[k])grouped[k]=[]; grouped[k].push(i); });
+  const keys = Object.keys(grouped).sort((a,b)=>b.localeCompare(a));
+  document.getElementById('sold-list').innerHTML = keys.map(key=>{
+    const label = view==='month' ? key.replace('-','年')+'月' : key+'年';
+    const entries = grouped[key];
+    return `<div class="sold-group">
+      <div class="sold-group-title"><span>${label}</span><span class="cnt-badge">${entries.length}件</span></div>
+      ${entries.map(i=>`<div class="sold-item">
+        <span class="badge ${PLAT_BADGE[platKey(i.plat)]}">${i.platLabel}</span>
+        <span class="sold-code">${i.code}</span>
+        <span class="sold-date">${i.soldDate.replace(/-/g,'/')} ${i.soldTime}</span>
+      </div>`).join('')}
+    </div>`;
+  }).join('');
+}
+
+// History
+function undoEntry(hid){
+  const entry = historyLog.find(h=>h.hid===hid);
+  if(!entry || entry.undone || !entry.snap) return;
+  items = JSON.parse(JSON.stringify(entry.snap.items));
+  soldItems = JSON.parse(JSON.stringify(entry.snap.soldItems));
+  entry.undone = true;
+  const {date,time} = nowStr();
+  historyLog.push({hid:nextHid++,action:'undo',plat:entry.plat,platLabel:entry.platLabel,code:entry.code,date,time,undone:false,snap:null});
+  save(); render();
+  showToast('「' + entry.code + '」の操作を元に戻しました');
+}
+
+function renderHist(){
+  const el = document.getElementById('hist-list');
+  if(!historyLog.length){ el.innerHTML='<div class="empty"><div class="empty-icon">📋</div>履歴がありません</div>'; return; }
+  const byDate = {};
+  [...historyLog].reverse().forEach(h=>{ if(!byDate[h.date])byDate[h.date]=[]; byDate[h.date].push(h); });
+  el.innerHTML = Object.entries(byDate).map(([date,entries])=>`
+    <div class="hist-group">
+      <div class="hist-date-label">${date.replace(/-/g,'/')}</div>
+      ${entries.map(h=>{
+        const canUndo = h.snap && !h.undone && h.action !== 'undo';
+        return `<div class="hist-item">
+          <span class="hist-action ${ACTION_CLASS[h.action]||'hist-add'}">${ACTION_LABEL[h.action]||h.action}</span>
+          <span class="hist-code">${h.code}</span>
+          <span class="hist-plat">${h.platLabel}</span>
+          <span class="hist-time">${h.time}</span>
+          <button class="btn-undo${h.undone?' undone':''}" onclick="undoEntry(${h.hid})" ${canUndo?'':'disabled'}>
+            ${h.undone ? '取消済' : canUndo ? '↩ 元に戻す' : '—'}
+          </button>
+        </div>`;
+      }).join('')}
+    </div>
+  `).join('');
+}
+
+function clearHist(){ if(!confirm('操作履歴をすべて削除しますか？')) return; historyLog=[]; save(); renderHist(); }
+
+function render(){ renderStats(); renderList(); renderSold(); renderHist(); }
+
+function setFilter(f,el){
+  filter=f;
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  checked.clear(); renderList();
+}
+
+function switchTab(tab,el){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+tab).classList.add('active');
+  if(tab==='sold') renderSold();
+}
+
+function toggleOther(){
+  const v = document.getElementById('m-plat').value;
+  document.getElementById('other-wrap').classList.toggle('show', v==='other');
+  if(v==='other') document.getElementById('m-other-name').focus();
+}
+
+function openModal(){ document.getElementById('modal').classList.add('open'); setTimeout(()=>document.getElementById('m-code').focus(),50); }
+function closeModal(e){ if(!e || e.target===document.getElementById('modal')) document.getElementById('modal').classList.remove('open'); }
+
+function addItem(){
+  const code = document.getElementById('m-code').value.trim();
+  const platVal = document.getElementById('m-plat').value;
+  if(!code){ document.getElementById('m-code').focus(); return; }
+  let plat, platLabel;
+  if(platVal==='paypay'){ plat='paypay'; platLabel='PayPay'; }
+  else if(platVal==='mercari'){ plat='mercari'; platLabel='メルカリ'; }
+  else { const n=document.getElementById('m-other-name').value.trim(); plat='other'; platLabel=n||'その他'; }
+  const {date,time} = nowStr();
+  const snap = snapshot();
+  const item = {id:nextId++, plat, platLabel, code, date, time};
+  items.unshift(item);
+  historyLog.push({hid:nextHid++,action:'add',plat,platLabel,code,date,time,undone:false,snap});
+  document.getElementById('m-code').value='';
+  document.getElementById('m-other-name').value='';
+  document.getElementById('m-plat').value='paypay';
+  document.getElementById('other-wrap').classList.remove('show');
+  document.getElementById('modal').classList.remove('open');
+  save(); render();
+  showToast('「' + code + '」を追加しました');
+}
+
+document.getElementById('m-code').addEventListener('keydown', e=>{ if(e.key==='Enter') addItem(); });
+document.addEventListener('keydown', e=>{ if(e.key==='Escape'){ closeModal(); closeExportModal(); } });
+
+// --- CSV Export ---
+function openExportModal(){
+  document.getElementById('exp-items-count').textContent = items.length;
+  document.getElementById('exp-sold-count').textContent = soldItems.length;
+  document.getElementById('export-modal').classList.add('open');
+}
+function closeExportModal(e){
+  if(!e || e.target===document.getElementById('export-modal'))
+    document.getElementById('export-modal').classList.remove('open');
+}
+
+function exportCSV(type){
+  let rows = [];
+  const today = new Date().toISOString().slice(0,10).replace(/-/g,'');
+
+  if(type === 'items' || type === 'all'){
+    if(type === 'all') rows.push(['--- 在庫一覧 ---','','','']);
+    rows.push(['プラットフォーム','管理番号','登録日','状態']);
+    items.forEach(i => rows.push([i.platLabel, i.code, i.date.replace(/-/g,'/'), '在庫中']));
+  }
+
+  if(type === 'sold' || type === 'all'){
+    if(type === 'all') rows.push([''],['--- 販売履歴 ---','','','','']);
+    rows.push(['プラットフォーム','管理番号','登録日','売却日','売却時刻']);
+    soldItems.forEach(i => rows.push([i.platLabel, i.code, i.date.replace(/-/g,'/'), i.soldDate.replace(/-/g,'/'), i.soldTime]));
+  }
+
+  const bom = '\uFEFF'; // Excel文字化け防止
+  const csv = bom + rows.map(r => r.map(v => '"' + String(v).replace(/"/g,'""') + '"').join(',')).join('\r\n');
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const filename = type === 'items' ? `在庫一覧_${today}.csv` : type === 'sold' ? `販売履歴_${today}.csv` : `フリマ管理_全件_${today}.csv`;
+  a.href = url; a.download = filename; a.click();
+  URL.revokeObjectURL(url);
+  document.getElementById('export-modal').classList.remove('open');
+  showToast(filename + ' を書き出しました');
+}
+render();
+</script>
+</body>
+</html>
