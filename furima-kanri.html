@@ -553,6 +553,16 @@ body {
 }
 .btn-export-item:hover { background: var(--accent-light); border-color: rgba(42,92,255,0.3); }
 .export-icon { font-size: 22px; flex-shrink: 0; }
+.exported-badge {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 20px;
+  background: #e8f0ff;
+  color: #3730a3;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
 
 /* Scrollbar */
 ::-webkit-scrollbar { width: 6px; }
@@ -656,6 +666,23 @@ body {
     <div class="field">
       <label>管理番号</label>
       <input id="m-code" type="text" class="mono" placeholder="例: hp012" autocomplete="off"/>
+    </div>
+    <div class="field">
+      <label>発送方法</label>
+      <select id="m-shipping" onchange="toggleShippingOther()">
+        <option value="ゆうパケットポストmini">ゆうパケットポストmini</option>
+        <option value="other">その他</option>
+      </select>
+      <div class="other-field" id="shipping-other-wrap">
+        <input id="m-shipping-other" type="text" placeholder="発送方法を入力" autocomplete="off"/>
+      </div>
+    </div>
+    <div class="field">
+      <label>販売価格</label>
+      <div style="position:relative">
+        <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--text-2);font-size:14px">¥</span>
+        <input id="m-price" type="number" min="0" placeholder="0" style="padding-left:28px" autocomplete="off"/>
+      </div>
     </div>
     <div class="modal-btns">
       <button class="btn-modal-cancel" onclick="closeModal()">キャンセル</button>
@@ -780,7 +807,11 @@ function renderList(){
       <div class="item${checked.has(i.id)?' checked':''}">
         <input type="checkbox" class="cb" ${checked.has(i.id)?'checked':''} onchange="toggleCheck(${i.id},this)"/>
         <span class="badge ${PLAT_BADGE[platKey(i.plat)]}">${i.platLabel}</span>
-        <span class="item-code">${i.code}</span>
+        <div style="flex:1;min-width:0">
+          <div class="item-code">${i.code}</div>
+          <div style="font-size:11px;color:var(--text-3);margin-top:1px">${i.shipping||'—'}${i.price!=null?' · ¥'+i.price.toLocaleString():''}</div>
+        </div>
+        ${i.exportedDate ? `<span class="exported-badge">出力済 ${i.exportedDate}</span>` : ''}
         <span class="item-date">${i.date.replace(/-/g,'/')}</span>
       </div>
     `).join('');
@@ -904,6 +935,12 @@ function toggleOther(){
   if(v==='other') document.getElementById('m-other-name').focus();
 }
 
+function toggleShippingOther(){
+  const v = document.getElementById('m-shipping').value;
+  document.getElementById('shipping-other-wrap').classList.toggle('show', v==='other');
+  if(v==='other') document.getElementById('m-shipping-other').focus();
+}
+
 function openModal(){ document.getElementById('modal').classList.add('open'); setTimeout(()=>document.getElementById('m-code').focus(),50); }
 function closeModal(e){ if(!e || e.target===document.getElementById('modal')) document.getElementById('modal').classList.remove('open'); }
 
@@ -915,15 +952,25 @@ function addItem(){
   if(platVal==='paypay'){ plat='paypay'; platLabel='ペイペイフリマ'; }
   else if(platVal==='mercari'){ plat='mercari'; platLabel='メルカリ'; }
   else { const n=document.getElementById('m-other-name').value.trim(); plat='other'; platLabel=n||'その他'; }
+  const shippingVal = document.getElementById('m-shipping').value;
+  const shipping = shippingVal==='other'
+    ? (document.getElementById('m-shipping-other').value.trim() || 'その他')
+    : shippingVal;
+  const priceRaw = document.getElementById('m-price').value;
+  const price = priceRaw !== '' ? parseInt(priceRaw, 10) : null;
   const {date,time} = nowStr();
   const snap = snapshot();
-  const item = {id:nextId++, plat, platLabel, code, date, time};
+  const item = {id:nextId++, plat, platLabel, code, shipping, price, date, time};
   items.unshift(item);
   historyLog.push({hid:nextHid++,action:'add',plat,platLabel,code,date,time,undone:false,snap});
   document.getElementById('m-code').value='';
   document.getElementById('m-other-name').value='';
   document.getElementById('m-plat').value='paypay';
+  document.getElementById('m-shipping').value='ゆうパケットポストmini';
+  document.getElementById('m-shipping-other').value='';
+  document.getElementById('m-price').value='';
   document.getElementById('other-wrap').classList.remove('show');
+  document.getElementById('shipping-other-wrap').classList.remove('show');
   document.getElementById('modal').classList.remove('open');
   save(); render();
   showToast('「' + code + '」を追加しました');
@@ -946,17 +993,22 @@ function closeExportModal(e){
 function exportCSV(type){
   let rows = [];
   const today = new Date().toISOString().slice(0,10).replace(/-/g,'');
+  const todayDisp = new Date().toISOString().slice(0,10).replace(/-/g,'/');
 
   if(type === 'items' || type === 'all'){
-    if(type === 'all') rows.push(['--- 在庫一覧 ---','','','']);
-    rows.push(['プラットフォーム','管理番号','登録日','状態']);
-    items.forEach(i => rows.push([i.platLabel, i.code, i.date.replace(/-/g,'/'), '在庫中']));
+    if(type === 'all') rows.push(['--- 在庫一覧 ---','','','','','']);
+    rows.push(['プラットフォーム','管理番号','発送方法','販売価格','登録日','状態']);
+    items.forEach(i => {
+      rows.push([i.platLabel, i.code, i.shipping||'', i.price!=null?i.price:'', i.date.replace(/-/g,'/'), '在庫中']);
+      if(!i.exportedDate) i.exportedDate = todayDisp; // 初回出力日を記録
+    });
+    save();
   }
 
   if(type === 'sold' || type === 'all'){
-    if(type === 'all') rows.push([''],['--- 販売履歴 ---','','','','']);
-    rows.push(['プラットフォーム','管理番号','登録日','売却日','売却時刻']);
-    soldItems.forEach(i => rows.push([i.platLabel, i.code, i.date.replace(/-/g,'/'), i.soldDate.replace(/-/g,'/'), i.soldTime]));
+    if(type === 'all') rows.push([''],['--- 販売履歴 ---','','','','','','']);
+    rows.push(['プラットフォーム','管理番号','発送方法','販売価格','登録日','売却日','売却時刻']);
+    soldItems.forEach(i => rows.push([i.platLabel, i.code, i.shipping||'', i.price!=null?i.price:'', i.date.replace(/-/g,'/'), i.soldDate.replace(/-/g,'/'), i.soldTime]));
   }
 
   const bom = '\uFEFF'; // Excel文字化け防止
