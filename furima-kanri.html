@@ -24,8 +24,8 @@
   --mer-text: #1a7a3c;
   --other-bg: #f2eeff;
   --other-text: #5b3fc2;
-  --sold-bg: #fff8e6;
-  --sold-text: #a06000;
+  --exp-bg: #e8f0ff;
+  --exp-text: #3730a3;
   --undo-bg: #fdf4e7;
   --undo-text: #8a5a00;
   --danger: #d93025;
@@ -45,6 +45,7 @@ body {
   min-height: 100vh;
   font-size: 14px;
   line-height: 1.6;
+  -webkit-text-size-adjust: 100%;
 }
 
 /* Layout */
@@ -75,25 +76,7 @@ body {
   color: var(--text);
   flex: 1;
 }
-.header-logo span {
-  color: var(--accent);
-}
-.btn-csv {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  background: var(--surface);
-  color: var(--text-2);
-  border: 1px solid var(--border-strong);
-  border-radius: 8px;
-  padding: 8px 14px;
-  font-size: 14px;
-  font-family: var(--font);
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.15s;
-}
-.btn-csv:hover { background: var(--surface2); color: var(--text); }
+.header-logo span { color: var(--accent); }
 .btn-add {
   display: flex;
   align-items: center;
@@ -102,7 +85,7 @@ body {
   color: #fff;
   border: none;
   border-radius: 8px;
-  padding: 8px 16px;
+  padding: 9px 16px;
   font-size: 14px;
   font-family: var(--font);
   font-weight: 500;
@@ -146,10 +129,9 @@ body {
   gap: 0;
   padding: 16px 20px 0;
   border-bottom: 1px solid var(--border);
-  margin: 0 0px;
 }
 .tab {
-  padding: 8px 16px;
+  padding: 10px 14px;
   font-size: 13px;
   font-family: var(--font);
   cursor: pointer;
@@ -160,6 +142,7 @@ body {
   margin-bottom: -1px;
   transition: color 0.15s;
   font-weight: 500;
+  white-space: nowrap;
 }
 .tab:hover { color: var(--text); }
 .tab.active {
@@ -167,7 +150,7 @@ body {
   border-bottom-color: var(--accent);
 }
 
-/* Page content */
+/* Page */
 .page { display: none; padding: 16px 20px 0; }
 .page.active { display: block; }
 
@@ -182,7 +165,7 @@ body {
   background: var(--surface);
   border: 1px solid var(--border-strong);
   border-radius: 20px;
-  padding: 5px 14px;
+  padding: 6px 14px;
   font-size: 12px;
   font-family: var(--font);
   cursor: pointer;
@@ -206,12 +189,15 @@ body {
   border: 1px solid rgba(42,92,255,0.2);
   border-radius: var(--radius);
   margin-bottom: 10px;
+  position: sticky;
+  top: 56px;
+  z-index: 10;
 }
 .bulk-bar.show { display: flex; }
 .bulk-count { font-size: 13px; color: var(--accent); flex: 1; font-weight: 500; }
 .btn-sm {
   border-radius: 7px;
-  padding: 5px 12px;
+  padding: 7px 14px;
   font-size: 12px;
   font-family: var(--font);
   cursor: pointer;
@@ -237,12 +223,12 @@ body {
 .btn-sm-primary:hover { opacity: 0.88; }
 
 /* Item list */
-.list { display: flex; flex-direction:column; gap: 6px; }
+.list { display: flex; flex-direction: column; gap: 6px; }
 .item {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 11px 14px;
+  padding: 11px 12px;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -253,8 +239,8 @@ body {
   background: var(--accent-light);
 }
 .cb {
-  width: 17px;
-  height: 17px;
+  width: 22px;
+  height: 22px;
   flex-shrink: 0;
   cursor: pointer;
   accent-color: var(--accent);
@@ -277,8 +263,14 @@ body {
   font-weight: 600;
   font-family: var(--mono);
   color: var(--text);
-  flex: 1;
   letter-spacing: -0.3px;
+  word-break: break-all;
+}
+.item-sub {
+  font-size: 11px;
+  color: var(--text-3);
+  margin-top: 1px;
+  word-break: break-all;
 }
 .item-date { font-size: 11px; color: var(--text-3); white-space: nowrap; }
 .empty {
@@ -288,59 +280,6 @@ body {
   font-size: 14px;
 }
 .empty-icon { font-size: 32px; margin-bottom: 8px; }
-
-/* Sold page */
-.sold-controls { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
-.sel {
-  padding: 7px 12px;
-  border: 1px solid var(--border-strong);
-  border-radius: 8px;
-  font-size: 13px;
-  font-family: var(--font);
-  background: var(--surface);
-  color: var(--text);
-  cursor: pointer;
-}
-.sold-summary {
-  display: grid;
-  grid-template-columns: repeat(4,1fr);
-  gap: 8px;
-  margin-bottom: 16px;
-}
-.sold-group { margin-bottom: 16px; }
-.sold-group-title {
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--text-2);
-  padding: 4px 0 8px;
-  border-bottom: 1px solid var(--border);
-  margin-bottom: 6px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-}
-.cnt-badge {
-  font-size: 11px;
-  background: var(--surface2);
-  color: var(--text-2);
-  padding: 2px 9px;
-  border-radius: 20px;
-  font-weight: 500;
-  text-transform: none;
-  letter-spacing: 0;
-}
-.sold-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 8px 0;
-  border-bottom: 1px solid var(--border);
-}
-.sold-item:last-child { border-bottom: none; }
-.sold-code { font-size: 13px; font-family: var(--mono); font-weight: 600; color: var(--text); flex: 1; }
-.sold-date { font-size: 11px; color: var(--text-3); white-space: nowrap; }
 
 /* History page */
 .hist-toolbar {
@@ -353,7 +292,7 @@ body {
   background: none;
   border: 1px solid var(--border-strong);
   border-radius: 7px;
-  padding: 5px 12px;
+  padding: 6px 12px;
   font-size: 12px;
   font-family: var(--font);
   cursor: pointer;
@@ -375,7 +314,7 @@ body {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 8px 0;
+  padding: 9px 0;
   border-bottom: 1px solid var(--border);
 }
 .hist-item:last-child { border-bottom: none; }
@@ -389,17 +328,17 @@ body {
   letter-spacing: 0.3px;
 }
 .hist-add { background: var(--mer-bg); color: var(--mer-text); }
-.hist-sold { background: var(--sold-bg); color: var(--sold-text); }
+.hist-export { background: var(--exp-bg); color: var(--exp-text); }
 .hist-undo { background: var(--undo-bg); color: var(--undo-text); }
 .hist-del { background: #fff1f0; color: var(--danger); }
-.hist-code { font-size: 13px; font-family: var(--mono); font-weight: 600; color: var(--text); flex: 1; }
+.hist-code { font-size: 13px; font-family: var(--mono); font-weight: 600; color: var(--text); flex: 1; word-break: break-all; }
 .hist-plat { font-size: 11px; color: var(--text-2); white-space: nowrap; }
 .hist-time { font-size: 11px; color: var(--text-3); white-space: nowrap; }
 .btn-undo {
   background: var(--surface);
   border: 1px solid var(--border-strong);
   border-radius: 7px;
-  padding: 4px 10px;
+  padding: 6px 10px;
   font-size: 11px;
   font-family: var(--font);
   cursor: pointer;
@@ -416,10 +355,7 @@ body {
   color: var(--accent);
   border-color: rgba(42,92,255,0.3);
 }
-.btn-undo:disabled {
-  opacity: 0.35;
-  cursor: default;
-}
+.btn-undo:disabled { opacity: 0.35; cursor: default; }
 .btn-undo.undone {
   background: var(--surface2);
   color: var(--text-3);
@@ -445,6 +381,8 @@ body {
   border-radius: var(--radius-lg);
   padding: 24px;
   width: min(360px, 100%);
+  max-height: 90vh;
+  overflow-y: auto;
   box-shadow: 0 20px 60px rgba(0,0,0,0.15);
   animation: modal-in 0.18s ease;
 }
@@ -466,12 +404,18 @@ body {
   margin-bottom: 5px;
   font-weight: 500;
 }
+.field-hint {
+  font-weight: 400;
+  color: var(--text-3);
+  font-size: 11px;
+  margin-left: 4px;
+}
 .field input, .field select {
   width: 100%;
-  padding: 10px 12px;
+  padding: 11px 12px;
   border: 1px solid var(--border-strong);
   border-radius: 8px;
-  font-size: 14px;
+  font-size: 16px;
   font-family: var(--font);
   background: var(--bg);
   color: var(--text);
@@ -482,13 +426,13 @@ body {
   border-color: var(--accent);
   box-shadow: 0 0 0 3px rgba(42,92,255,0.12);
 }
-.field input.mono { font-family: var(--mono); font-size: 15px; letter-spacing: -0.3px; }
+.field input.mono { font-family: var(--mono); letter-spacing: -0.3px; }
 .other-field { display: none; margin-top: 8px; }
 .other-field.show { display: block; }
 .modal-btns { display: flex; gap: 8px; margin-top: 20px; }
 .btn-modal-cancel {
   flex: 1;
-  padding: 10px;
+  padding: 12px;
   border: 1px solid var(--border-strong);
   border-radius: 8px;
   font-size: 14px;
@@ -500,7 +444,7 @@ body {
 .btn-modal-cancel:hover { background: var(--surface2); }
 .btn-modal-save {
   flex: 2;
-  padding: 10px;
+  padding: 12px;
   border: none;
   border-radius: 8px;
   font-size: 14px;
@@ -521,7 +465,7 @@ body {
   transform: translateX(-50%) translateY(16px);
   background: #1a1a18;
   color: #fff;
-  padding: 10px 20px;
+  padding: 11px 20px;
   border-radius: 8px;
   font-size: 13px;
   font-weight: 500;
@@ -529,39 +473,13 @@ body {
   pointer-events: none;
   transition: opacity 0.2s, transform 0.2s;
   z-index: 999;
-  white-space: nowrap;
+  max-width: calc(100vw - 40px);
+  text-align: center;
   box-shadow: 0 4px 20px rgba(0,0,0,0.2);
 }
 .toast.show {
   opacity: 1;
   transform: translateX(-50%) translateY(0);
-}
-
-.btn-export-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  background: var(--surface);
-  border: 1px solid var(--border-strong);
-  border-radius: var(--radius);
-  padding: 14px 16px;
-  cursor: pointer;
-  transition: all 0.15s;
-  text-align: left;
-  width: 100%;
-  font-family: var(--font);
-}
-.btn-export-item:hover { background: var(--accent-light); border-color: rgba(42,92,255,0.3); }
-.export-icon { font-size: 22px; flex-shrink: 0; }
-.exported-badge {
-  font-size: 10px;
-  font-weight: 700;
-  padding: 2px 7px;
-  border-radius: 20px;
-  background: #e8f0ff;
-  color: #3730a3;
-  white-space: nowrap;
-  flex-shrink: 0;
 }
 
 /* Scrollbar */
@@ -572,7 +490,6 @@ body {
 /* Responsive */
 @media (max-width: 480px) {
   .stats { grid-template-columns: repeat(2,1fr); }
-  .sold-summary { grid-template-columns: repeat(2,1fr); }
   .hist-plat { display: none; }
   .stat-val { font-size: 20px; }
 }
@@ -582,10 +499,6 @@ body {
 <div class="app">
   <header class="header">
     <div class="header-logo">フリマ<span>管理</span></div>
-    <button class="btn-csv" onclick="openExportModal()" title="CSVで書き出す">
-      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 10v2h10v-2M7 1v8M4 6l3 3 3-3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      書き出し
-    </button>
     <button class="btn-add" onclick="openModal()">
       <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1v12M1 7h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
       追加
@@ -596,12 +509,12 @@ body {
     <div class="stat"><div class="stat-label">在庫件数</div><div class="stat-val" id="s-total">0</div></div>
     <div class="stat"><div class="stat-label">ペイペイ</div><div class="stat-val" id="s-pay">0</div></div>
     <div class="stat"><div class="stat-label">メルカリ</div><div class="stat-val" id="s-mer">0</div></div>
-    <div class="stat"><div class="stat-label">売却済</div><div class="stat-val" id="s-sold">0</div></div>
+    <div class="stat"><div class="stat-label">書出済</div><div class="stat-val" id="s-exp">0</div></div>
   </div>
 
   <div class="tabs">
     <button class="tab active" onclick="switchTab('list',this)">一覧</button>
-    <button class="tab" onclick="switchTab('sold',this)">販売履歴</button>
+    <button class="tab" onclick="switchTab('exported',this)">書き出し済み</button>
     <button class="tab" onclick="switchTab('hist',this)">操作履歴</button>
   </div>
 
@@ -616,27 +529,19 @@ body {
     <div class="bulk-bar" id="bulk-bar">
       <span class="bulk-count" id="bulk-count">0件選択中</span>
       <button class="btn-sm" onclick="clearChecks()">解除</button>
-      <button class="btn-sm btn-sm-primary" onclick="bulkSold()">売却済みにする</button>
+      <button class="btn-sm btn-sm-primary" onclick="bulkExport()">CSVに書き出す</button>
     </div>
     <div class="list" id="list"></div>
   </div>
 
-  <!-- 販売履歴 -->
-  <div id="page-sold" class="page">
-    <div class="sold-controls">
-      <select class="sel" id="sold-view" onchange="renderSold()">
-        <option value="month">月別</option>
-        <option value="year">年別</option>
-      </select>
-      <select class="sel" id="sold-plat-filter" onchange="renderSold()">
-        <option value="all">すべて</option>
-        <option value="paypay">ペイペイフリマ</option>
-        <option value="mercari">メルカリ</option>
-        <option value="other">その他</option>
-      </select>
+  <!-- 書き出し済み -->
+  <div id="page-exported" class="page">
+    <div class="bulk-bar" id="exp-bulk-bar">
+      <span class="bulk-count" id="exp-bulk-count">0件選択中</span>
+      <button class="btn-sm" onclick="clearExpChecks()">解除</button>
+      <button class="btn-sm btn-sm-danger" onclick="bulkDelete()">削除</button>
     </div>
-    <div class="sold-summary" id="sold-summary"></div>
-    <div id="sold-list"></div>
+    <div class="list" id="exp-list"></div>
   </div>
 
   <!-- 操作履歴 -->
@@ -648,7 +553,7 @@ body {
   </div>
 </div>
 
-<!-- Modal -->
+<!-- 追加モーダル -->
 <div class="modal-bg" id="modal" onclick="closeModal(event)">
   <div class="modal">
     <div class="modal-title">商品を追加</div>
@@ -660,11 +565,11 @@ body {
         <option value="other">その他</option>
       </select>
       <div class="other-field" id="other-wrap">
-        <input id="m-other-name" type="text" placeholder="プラットフォーム名" autocomplete="off"/>
+        <input id="m-other-name" type="text" placeholder="プラットフォーム名 (英数字・カタカナ)" autocomplete="off"/>
       </div>
     </div>
     <div class="field">
-      <label>管理番号</label>
+      <label>管理番号<span class="field-hint">英数字・カタカナのみ</span></label>
       <input id="m-code" type="text" class="mono" placeholder="例: hp012" autocomplete="off"/>
     </div>
     <div class="field">
@@ -681,7 +586,7 @@ body {
       <label>販売価格</label>
       <div style="position:relative">
         <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--text-2);font-size:14px">¥</span>
-        <input id="m-price" type="number" min="0" placeholder="0" style="padding-left:28px" autocomplete="off"/>
+        <input id="m-price" type="number" inputmode="numeric" min="0" placeholder="0" style="padding-left:28px" autocomplete="off"/>
       </div>
     </div>
     <div class="modal-btns">
@@ -693,214 +598,167 @@ body {
 
 <div class="toast" id="toast"></div>
 
-<!-- Export Modal -->
-<div class="modal-bg" id="export-modal" onclick="closeExportModal(event)">
-  <div class="modal">
-    <div class="modal-title">CSVで書き出し</div>
-    <p style="font-size:13px;color:var(--text-2);margin-bottom:18px;line-height:1.7">書き出したファイルはExcelやメモ帳で開けます。バックアップとして定期的に保存しておくと安心です。</p>
-    <div style="display:flex;flex-direction:column;gap:10px;">
-      <button class="btn-export-item" onclick="exportCSV('items')">
-        <div class="export-icon">📦</div>
-        <div>
-          <div style="font-weight:700;font-size:14px;color:var(--text)">在庫一覧を書き出す</div>
-          <div style="font-size:12px;color:var(--text-2);margin-top:2px">現在の在庫 <span id="exp-items-count">0</span>件</div>
-        </div>
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style="margin-left:auto;flex-shrink:0"><path d="M2 10v2h10v-2M7 1v8M4 6l3 3 3-3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </button>
-      <button class="btn-export-item" onclick="exportCSV('sold')">
-        <div class="export-icon">🏷️</div>
-        <div>
-          <div style="font-weight:700;font-size:14px;color:var(--text)">販売履歴を書き出す</div>
-          <div style="font-size:12px;color:var(--text-2);margin-top:2px">売却済み <span id="exp-sold-count">0</span>件</div>
-        </div>
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style="margin-left:auto;flex-shrink:0"><path d="M2 10v2h10v-2M7 1v8M4 6l3 3 3-3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </button>
-      <button class="btn-export-item" onclick="exportCSV('all')">
-        <div class="export-icon">📋</div>
-        <div>
-          <div style="font-weight:700;font-size:14px;color:var(--text)">すべてまとめて書き出す</div>
-          <div style="font-size:12px;color:var(--text-2);margin-top:2px">在庫 + 販売履歴 全件</div>
-        </div>
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style="margin-left:auto;flex-shrink:0"><path d="M2 10v2h10v-2M7 1v8M4 6l3 3 3-3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </button>
-    </div>
-    <button class="btn-modal-cancel" style="width:100%;margin-top:16px" onclick="closeExportModal()">閉じる</button>
-  </div>
-</div>
-
 <script>
 const PLAT_BADGE = { paypay:'badge-paypay', mercari:'badge-mercari', other:'badge-other' };
-const PLAT_LABEL = { paypay:'PayPay', mercari:'メルカリ' };
-const ACTION_LABEL = { add:'追加', sold:'売却', undo:'取消', del:'削除' };
-const ACTION_CLASS = { add:'hist-add', sold:'hist-sold', undo:'hist-undo', del:'hist-del' };
+const ACTION_LABEL = { add:'追加', export:'書出', del:'削除', undo:'取消' };
+const ACTION_CLASS = { add:'hist-add', export:'hist-export', del:'hist-del', undo:'hist-undo' };
+const VALID_RE = /^[A-Za-z0-9ァ-ヶー]+$/;
+const STORAGE_KEY = 'furima_data_v1';
 
 function platKey(p){ return (p==='paypay'||p==='mercari') ? p : 'other'; }
 function nowStr(){ const n=new Date(); return { date:n.toISOString().slice(0,10), time:n.toTimeString().slice(0,5) }; }
+function escHtml(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
 
 // --- Storage ---
-const STORAGE_KEY = 'furima_data_v1';
 function load(){
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if(raw) return JSON.parse(raw);
-  } catch(e){}
-  return null;
+    if(!raw) return null;
+    const data = JSON.parse(raw);
+    // 旧形式 soldItems → 新形式 exportedItems への移行
+    if(Array.isArray(data.soldItems) && !Array.isArray(data.exportedItems)){
+      data.exportedItems = data.soldItems.map(i => {
+        const x = {...i};
+        x.exportedDate = i.soldDate || i.exportedDate || '';
+        x.exportedTime = i.soldTime || i.exportedTime || '';
+        delete x.soldDate;
+        delete x.soldTime;
+        return x;
+      });
+      delete data.soldItems;
+    }
+    if(!Array.isArray(data.exportedItems)) data.exportedItems = [];
+    // 旧形式 historyLog の action 名を移行（'sold' → 'export'）。snap は破棄。
+    if(Array.isArray(data.historyLog)){
+      data.historyLog = data.historyLog.map(h => {
+        const e = {...h};
+        if(e.action === 'sold') e.action = 'export';
+        delete e.snap;
+        return e;
+      });
+    }
+    return data;
+  } catch(e){ return null; }
 }
 function save(){
-  try { localStorage.setItem(STORAGE_KEY, JSON.stringify({ items, soldItems, historyLog, nextId, nextHid })); } catch(e){}
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({
+      items, exportedItems, historyLog, nextId, nextHid
+    }));
+  } catch(e){}
 }
 
 // --- State ---
-let saved = load();
-let items = saved ? saved.items : [
-  {id:1,plat:'paypay',platLabel:'ペイペイフリマ',code:'hp012',date:'2026-04-09',time:'10:00'},
-  {id:2,plat:'paypay',platLabel:'ペイペイフリマ',code:'r007',date:'2026-04-09',time:'10:01'},
-  {id:3,plat:'paypay',platLabel:'ペイペイフリマ',code:'ap012',date:'2026-04-09',time:'10:02'},
-  {id:4,plat:'paypay',platLabel:'ペイペイフリマ',code:'r025',date:'2026-04-09',time:'10:03'},
-  {id:5,plat:'mercari',platLabel:'メルカリ',code:'hp078',date:'2026-04-09',time:'10:04'},
-  {id:6,plat:'paypay',platLabel:'ペイペイフリマ',code:'hp080',date:'2026-04-09',time:'10:05'},
-  {id:7,plat:'paypay',platLabel:'ペイペイフリマ',code:'hp008',date:'2026-04-09',time:'10:06'},
-  {id:8,plat:'paypay',platLabel:'ペイペイフリマ',code:'fp019',date:'2026-04-09',time:'10:07'},
-  {id:9,plat:'paypay',platLabel:'ペイペイフリマ',code:'p011',date:'2026-04-09',time:'10:08'},
-  {id:10,plat:'paypay',platLabel:'ペイペイフリマ',code:'fp058',date:'2026-04-09',time:'10:09'},
-  {id:11,plat:'paypay',platLabel:'ペイペイフリマ',code:'cp060',date:'2026-04-09',time:'10:10'},
-  {id:12,plat:'mercari',platLabel:'メルカリ',code:'fp042',date:'2026-04-09',time:'10:11'},
-  {id:13,plat:'paypay',platLabel:'ペイペイフリマ',code:'fp022',date:'2026-04-09',time:'10:12'},
-  {id:14,plat:'paypay',platLabel:'ペイペイフリマ',code:'hp027',date:'2026-04-09',time:'10:13'},
-  {id:15,plat:'paypay',platLabel:'ペイペイフリマ',code:'cp054',date:'2026-04-09',time:'10:14'},
-  {id:16,plat:'mercari',platLabel:'メルカリ',code:'hp033',date:'2026-04-09',time:'10:15'},
-];
-let soldItems = saved ? saved.soldItems : [];
-let historyLog = saved ? saved.historyLog : items.map((i,idx)=>({hid:idx+1,action:'add',plat:i.plat,platLabel:i.platLabel,code:i.code,date:i.date,time:i.time,undone:false,snap:null}));
-let nextId = saved ? saved.nextId : 17;
-let nextHid = saved ? saved.nextHid : (historyLog.length + 1);
-let checked = new Set();
+const saved = load();
+let items = saved && Array.isArray(saved.items) ? saved.items : [];
+let exportedItems = saved && Array.isArray(saved.exportedItems) ? saved.exportedItems : [];
+let historyLog = saved && Array.isArray(saved.historyLog) ? saved.historyLog : [];
+let nextId = saved && saved.nextId ? saved.nextId : 1;
+let nextHid = saved && saved.nextHid ? saved.nextHid : 1;
+let checkedList = new Set();
+let checkedExp = new Set();
 let filter = 'all';
-
-function snapshot(){ return { items: JSON.parse(JSON.stringify(items)), soldItems: JSON.parse(JSON.stringify(soldItems)) }; }
 
 // Toast
 let toastTimer = null;
 function showToast(msg){
   const t = document.getElementById('toast');
-  t.textContent = msg; t.classList.add('show');
+  t.textContent = msg;
+  t.classList.add('show');
   clearTimeout(toastTimer);
   toastTimer = setTimeout(()=>t.classList.remove('show'), 2400);
 }
 
-// Stats
+// --- Render ---
 function renderStats(){
   document.getElementById('s-total').textContent = items.length;
   document.getElementById('s-pay').textContent = items.filter(i=>i.plat==='paypay').length;
   document.getElementById('s-mer').textContent = items.filter(i=>i.plat==='mercari').length;
-  document.getElementById('s-sold').textContent = soldItems.length;
+  document.getElementById('s-exp').textContent = exportedItems.length;
 }
 
-// List
 function renderList(){
-  const show = filter==='all' ? items : items.filter(i=>(filter==='other' ? platKey(i.plat)==='other' : i.plat===filter));
+  const show = filter==='all' ? items : items.filter(i => filter==='other' ? platKey(i.plat)==='other' : i.plat===filter);
   const el = document.getElementById('list');
   if(!show.length){
-    el.innerHTML = '<div class="empty"><div class="empty-icon">📦</div>データがありません</div>';
+    el.innerHTML = '<div class="empty"><div class="empty-icon">📦</div>商品がありません</div>';
   } else {
-    el.innerHTML = show.map(i=>`
-      <div class="item${checked.has(i.id)?' checked':''}">
-        <input type="checkbox" class="cb" ${checked.has(i.id)?'checked':''} onchange="toggleCheck(${i.id},this)"/>
-        <span class="badge ${PLAT_BADGE[platKey(i.plat)]}">${i.platLabel}</span>
+    el.innerHTML = show.map(i => `
+      <div class="item${checkedList.has(i.id)?' checked':''}">
+        <input type="checkbox" class="cb" ${checkedList.has(i.id)?'checked':''} onchange="toggleCheckList(${i.id},this)"/>
+        <span class="badge ${PLAT_BADGE[platKey(i.plat)]}">${escHtml(i.platLabel)}</span>
         <div style="flex:1;min-width:0">
-          <div class="item-code">${i.code}</div>
-          <div style="font-size:11px;color:var(--text-3);margin-top:1px">${i.shipping||'—'}${i.price!=null?' · ¥'+i.price.toLocaleString():''}</div>
+          <div class="item-code">${escHtml(i.code)}</div>
+          <div class="item-sub">${escHtml(i.shipping||'—')}${i.price!=null?' · ¥'+Number(i.price).toLocaleString():''}</div>
         </div>
-        ${i.exportedDate ? `<span class="exported-badge">出力済 ${i.exportedDate}</span>` : ''}
-        <span class="item-date">${i.date.replace(/-/g,'/')}</span>
+        <span class="item-date">${(i.date||'').replace(/-/g,'/')}</span>
       </div>
     `).join('');
   }
   const bar = document.getElementById('bulk-bar');
-  if(checked.size > 0){
+  if(checkedList.size > 0){
     bar.classList.add('show');
-    document.getElementById('bulk-count').textContent = checked.size + '件選択中';
+    document.getElementById('bulk-count').textContent = checkedList.size + '件選択中';
   } else {
     bar.classList.remove('show');
   }
 }
 
-function toggleCheck(id,el){ if(el.checked) checked.add(id); else checked.delete(id); renderList(); }
-function clearChecks(){ checked.clear(); renderList(); }
-
-function bulkSold(){
-  if(!checked.size) return;
-  const {date,time} = nowStr();
-  const snap = snapshot();
-  const sold = items.filter(i=>checked.has(i.id));
-  sold.forEach(item=>{
-    soldItems.push({...item, soldDate:date, soldTime:time});
-    historyLog.push({hid:nextHid++,action:'sold',plat:item.plat,platLabel:item.platLabel,code:item.code,date,time,undone:false,snap});
-  });
-  items = items.filter(i=>!checked.has(i.id));
-  checked.clear();
-  save(); render();
-  showToast(sold.length + '件を売却済みにしました');
-}
-
-// Sold
-function renderSold(){
-  const view = document.getElementById('sold-view').value;
-  const pf = document.getElementById('sold-plat-filter').value;
-  let filtered = pf==='all' ? soldItems : soldItems.filter(i=>(pf==='other' ? platKey(i.plat)==='other' : i.plat===pf));
-  const total=filtered.length, pay=filtered.filter(i=>i.plat==='paypay').length, mer=filtered.filter(i=>i.plat==='mercari').length, oth=filtered.filter(i=>platKey(i.plat)==='other').length;
-  document.getElementById('sold-summary').innerHTML = `
-    <div class="stat"><div class="stat-label">合計</div><div class="stat-val">${total}</div></div>
-    <div class="stat"><div class="stat-label">ペイペイ</div><div class="stat-val">${pay}</div></div>
-    <div class="stat"><div class="stat-label">メルカリ</div><div class="stat-val">${mer}</div></div>
-    <div class="stat"><div class="stat-label">その他</div><div class="stat-val">${oth}</div></div>
-  `;
-  if(!filtered.length){ document.getElementById('sold-list').innerHTML='<div class="empty"><div class="empty-icon">🏷️</div>販売履歴がありません</div>'; return; }
-  const grouped = {};
-  filtered.forEach(i=>{ const k=view==='month'?i.soldDate.slice(0,7):i.soldDate.slice(0,4); if(!grouped[k])grouped[k]=[]; grouped[k].push(i); });
-  const keys = Object.keys(grouped).sort((a,b)=>b.localeCompare(a));
-  document.getElementById('sold-list').innerHTML = keys.map(key=>{
-    const label = view==='month' ? key.replace('-','年')+'月' : key+'年';
-    const entries = grouped[key];
-    return `<div class="sold-group">
-      <div class="sold-group-title"><span>${label}</span><span class="cnt-badge">${entries.length}件</span></div>
-      ${entries.map(i=>`<div class="sold-item">
-        <span class="badge ${PLAT_BADGE[platKey(i.plat)]}">${i.platLabel}</span>
-        <span class="sold-code">${i.code}</span>
-        <span class="sold-date">${i.soldDate.replace(/-/g,'/')} ${i.soldTime}</span>
-      </div>`).join('')}
-    </div>`;
-  }).join('');
-}
-
-// History
-function undoEntry(hid){
-  const entry = historyLog.find(h=>h.hid===hid);
-  if(!entry || entry.undone || !entry.snap) return;
-  items = JSON.parse(JSON.stringify(entry.snap.items));
-  soldItems = JSON.parse(JSON.stringify(entry.snap.soldItems));
-  entry.undone = true;
-  const {date,time} = nowStr();
-  historyLog.push({hid:nextHid++,action:'undo',plat:entry.plat,platLabel:entry.platLabel,code:entry.code,date,time,undone:false,snap:null});
-  save(); render();
-  showToast('「' + entry.code + '」の操作を元に戻しました');
+function renderExp(){
+  const el = document.getElementById('exp-list');
+  if(!exportedItems.length){
+    el.innerHTML = '<div class="empty"><div class="empty-icon">📤</div>書き出し済みの商品はありません</div>';
+  } else {
+    const sorted = [...exportedItems].sort((a,b) => {
+      const ka = (a.exportedDate||'') + (a.exportedTime||'');
+      const kb = (b.exportedDate||'') + (b.exportedTime||'');
+      return kb.localeCompare(ka);
+    });
+    el.innerHTML = sorted.map(i => `
+      <div class="item${checkedExp.has(i.id)?' checked':''}">
+        <input type="checkbox" class="cb" ${checkedExp.has(i.id)?'checked':''} onchange="toggleCheckExp(${i.id},this)"/>
+        <span class="badge ${PLAT_BADGE[platKey(i.plat)]}">${escHtml(i.platLabel)}</span>
+        <div style="flex:1;min-width:0">
+          <div class="item-code">${escHtml(i.code)}</div>
+          <div class="item-sub">${escHtml(i.shipping||'—')}${i.price!=null?' · ¥'+Number(i.price).toLocaleString():''}</div>
+        </div>
+        <span class="item-date">${(i.exportedDate||'').replace(/-/g,'/')}</span>
+      </div>
+    `).join('');
+  }
+  const bar = document.getElementById('exp-bulk-bar');
+  if(checkedExp.size > 0){
+    bar.classList.add('show');
+    document.getElementById('exp-bulk-count').textContent = checkedExp.size + '件選択中';
+  } else {
+    bar.classList.remove('show');
+  }
 }
 
 function renderHist(){
   const el = document.getElementById('hist-list');
-  if(!historyLog.length){ el.innerHTML='<div class="empty"><div class="empty-icon">📋</div>履歴がありません</div>'; return; }
+  if(!historyLog.length){
+    el.innerHTML = '<div class="empty"><div class="empty-icon">📋</div>履歴がありません</div>';
+    return;
+  }
   const byDate = {};
-  [...historyLog].reverse().forEach(h=>{ if(!byDate[h.date])byDate[h.date]=[]; byDate[h.date].push(h); });
-  el.innerHTML = Object.entries(byDate).map(([date,entries])=>`
+  [...historyLog].reverse().forEach(h => {
+    const d = h.date || '----/--/--';
+    if(!byDate[d]) byDate[d] = [];
+    byDate[d].push(h);
+  });
+  el.innerHTML = Object.entries(byDate).map(([date, entries]) => `
     <div class="hist-group">
       <div class="hist-date-label">${date.replace(/-/g,'/')}</div>
-      ${entries.map(h=>{
-        const canUndo = h.snap && !h.undone && h.action !== 'undo';
+      ${entries.map(h => {
+        const canUndo = !!h.item && !h.undone && h.action !== 'undo';
+        const code = (h.item ? h.item.code : h.code) || '';
+        const platLabel = (h.item ? h.item.platLabel : h.platLabel) || '';
         return `<div class="hist-item">
           <span class="hist-action ${ACTION_CLASS[h.action]||'hist-add'}">${ACTION_LABEL[h.action]||h.action}</span>
-          <span class="hist-code">${h.code}</span>
-          <span class="hist-plat">${h.platLabel}</span>
-          <span class="hist-time">${h.time}</span>
+          <span class="hist-code">${escHtml(code)}</span>
+          <span class="hist-plat">${escHtml(platLabel)}</span>
+          <span class="hist-time">${escHtml(h.time||'')}</span>
           <button class="btn-undo${h.undone?' undone':''}" onclick="undoEntry(${h.hid})" ${canUndo?'':'disabled'}>
             ${h.undone ? '取消済' : canUndo ? '↩ 元に戻す' : '—'}
           </button>
@@ -910,118 +768,249 @@ function renderHist(){
   `).join('');
 }
 
-function clearHist(){ if(!confirm('操作履歴をすべて削除しますか？')) return; historyLog=[]; save(); renderHist(); }
+function render(){ renderStats(); renderList(); renderExp(); renderHist(); }
 
-function render(){ renderStats(); renderList(); renderSold(); renderHist(); }
+// --- Checks ---
+function toggleCheckList(id,el){ if(el.checked) checkedList.add(id); else checkedList.delete(id); renderList(); }
+function clearChecks(){ checkedList.clear(); renderList(); }
+function toggleCheckExp(id,el){ if(el.checked) checkedExp.add(id); else checkedExp.delete(id); renderExp(); }
+function clearExpChecks(){ checkedExp.clear(); renderExp(); }
 
-function setFilter(f,el){
-  filter=f;
-  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+// --- Filter / Tab ---
+function setFilter(f, el){
+  filter = f;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
   el.classList.add('active');
-  checked.clear(); renderList();
+  checkedList.clear();
+  renderList();
+}
+function switchTab(tab, el){
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + tab).classList.add('active');
 }
 
-function switchTab(tab,el){
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-  el.classList.add('active');
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.getElementById('page-'+tab).classList.add('active');
-  if(tab==='sold') renderSold();
-}
-
+// --- Modal ---
 function toggleOther(){
   const v = document.getElementById('m-plat').value;
-  document.getElementById('other-wrap').classList.toggle('show', v==='other');
-  if(v==='other') document.getElementById('m-other-name').focus();
+  document.getElementById('other-wrap').classList.toggle('show', v === 'other');
+  if(v === 'other') document.getElementById('m-other-name').focus();
 }
-
 function toggleShippingOther(){
   const v = document.getElementById('m-shipping').value;
-  document.getElementById('shipping-other-wrap').classList.toggle('show', v==='other');
-  if(v==='other') document.getElementById('m-shipping-other').focus();
+  document.getElementById('shipping-other-wrap').classList.toggle('show', v === 'other');
+  if(v === 'other') document.getElementById('m-shipping-other').focus();
+}
+function openModal(){
+  document.getElementById('modal').classList.add('open');
+  setTimeout(() => document.getElementById('m-code').focus(), 50);
+}
+function closeModal(e){
+  if(!e || e.target === document.getElementById('modal'))
+    document.getElementById('modal').classList.remove('open');
 }
 
-function openModal(){ document.getElementById('modal').classList.add('open'); setTimeout(()=>document.getElementById('m-code').focus(),50); }
-function closeModal(e){ if(!e || e.target===document.getElementById('modal')) document.getElementById('modal').classList.remove('open'); }
-
+// --- Add ---
 function addItem(){
   const code = document.getElementById('m-code').value.trim();
   const platVal = document.getElementById('m-plat').value;
-  if(!code){ document.getElementById('m-code').focus(); return; }
+
+  if(!code){
+    document.getElementById('m-code').focus();
+    showToast('管理番号を入力してください');
+    return;
+  }
+  if(!VALID_RE.test(code)){
+    document.getElementById('m-code').focus();
+    showToast('管理番号は英数字とカタカナのみ使えます');
+    return;
+  }
+
   let plat, platLabel;
-  if(platVal==='paypay'){ plat='paypay'; platLabel='ペイペイフリマ'; }
-  else if(platVal==='mercari'){ plat='mercari'; platLabel='メルカリ'; }
-  else { const n=document.getElementById('m-other-name').value.trim(); plat='other'; platLabel=n||'その他'; }
+  if(platVal === 'paypay'){ plat = 'paypay'; platLabel = 'ペイペイフリマ'; }
+  else if(platVal === 'mercari'){ plat = 'mercari'; platLabel = 'メルカリ'; }
+  else {
+    const n = document.getElementById('m-other-name').value.trim();
+    if(n && !VALID_RE.test(n)){
+      document.getElementById('m-other-name').focus();
+      showToast('プラットフォーム名は英数字とカタカナのみ使えます');
+      return;
+    }
+    plat = 'other';
+    platLabel = n || 'その他';
+  }
+
   const shippingVal = document.getElementById('m-shipping').value;
-  const shipping = shippingVal==='other'
+  const shipping = shippingVal === 'other'
     ? (document.getElementById('m-shipping-other').value.trim() || 'その他')
     : shippingVal;
   const priceRaw = document.getElementById('m-price').value;
   const price = priceRaw !== '' ? parseInt(priceRaw, 10) : null;
-  const {date,time} = nowStr();
-  const snap = snapshot();
-  const item = {id:nextId++, plat, platLabel, code, shipping, price, date, time};
+
+  const {date, time} = nowStr();
+  const item = { id: nextId++, plat, platLabel, code, shipping, price, date, time };
   items.unshift(item);
-  historyLog.push({hid:nextHid++,action:'add',plat,platLabel,code,date,time,undone:false,snap});
-  document.getElementById('m-code').value='';
-  document.getElementById('m-other-name').value='';
-  document.getElementById('m-plat').value='paypay';
-  document.getElementById('m-shipping').value='ゆうパケットポストmini';
-  document.getElementById('m-shipping-other').value='';
-  document.getElementById('m-price').value='';
+  historyLog.push({
+    hid: nextHid++,
+    action: 'add',
+    item: {...item},
+    date, time,
+    undone: false
+  });
+
+  // Reset form
+  document.getElementById('m-code').value = '';
+  document.getElementById('m-other-name').value = '';
+  document.getElementById('m-plat').value = 'paypay';
+  document.getElementById('m-shipping').value = 'ゆうパケットポストmini';
+  document.getElementById('m-shipping-other').value = '';
+  document.getElementById('m-price').value = '';
   document.getElementById('other-wrap').classList.remove('show');
   document.getElementById('shipping-other-wrap').classList.remove('show');
   document.getElementById('modal').classList.remove('open');
+
   save(); render();
   showToast('「' + code + '」を追加しました');
 }
 
-document.getElementById('m-code').addEventListener('keydown', e=>{ if(e.key==='Enter') addItem(); });
-document.addEventListener('keydown', e=>{ if(e.key==='Escape'){ closeModal(); closeExportModal(); } });
+// --- Bulk export (CSV + 移動) ---
+function bulkExport(){
+  if(!checkedList.size) return;
+  const target = items.filter(i => checkedList.has(i.id));
+  if(!target.length) return;
 
-// --- CSV Export ---
-function openExportModal(){
-  document.getElementById('exp-items-count').textContent = items.length;
-  document.getElementById('exp-sold-count').textContent = soldItems.length;
-  document.getElementById('export-modal').classList.add('open');
-}
-function closeExportModal(e){
-  if(!e || e.target===document.getElementById('export-modal'))
-    document.getElementById('export-modal').classList.remove('open');
-}
-
-function exportCSV(type){
-  let rows = [];
+  // CSV 生成（プラットフォーム / 管理番号 / 発送方法 / 販売価格 / 登録日）
   const today = new Date().toISOString().slice(0,10).replace(/-/g,'');
-  const todayDisp = new Date().toISOString().slice(0,10).replace(/-/g,'/');
-
-  if(type === 'items' || type === 'all'){
-    if(type === 'all') rows.push(['--- 在庫一覧 ---','','','','','']);
-    rows.push(['プラットフォーム','管理番号','発送方法','販売価格','登録日','状態']);
-    items.forEach(i => {
-      rows.push([i.platLabel, i.code, i.shipping||'', i.price!=null?i.price:'', i.date.replace(/-/g,'/'), '在庫中']);
-      if(!i.exportedDate) i.exportedDate = todayDisp; // 初回出力日を記録
-    });
-    save();
-  }
-
-  if(type === 'sold' || type === 'all'){
-    if(type === 'all') rows.push([''],['--- 販売履歴 ---','','','','','','']);
-    rows.push(['プラットフォーム','管理番号','発送方法','販売価格','登録日','売却日','売却時刻']);
-    soldItems.forEach(i => rows.push([i.platLabel, i.code, i.shipping||'', i.price!=null?i.price:'', i.date.replace(/-/g,'/'), i.soldDate.replace(/-/g,'/'), i.soldTime]));
-  }
-
-  const bom = '\uFEFF'; // Excel文字化け防止
+  const rows = [['プラットフォーム','管理番号','発送方法','販売価格','登録日']];
+  target.forEach(i => {
+    rows.push([
+      i.platLabel || '',
+      i.code || '',
+      i.shipping || '',
+      i.price != null ? i.price : '',
+      (i.date || '').replace(/-/g,'/')
+    ]);
+  });
+  const bom = '﻿';
   const csv = bom + rows.map(r => r.map(v => '"' + String(v).replace(/"/g,'""') + '"').join(',')).join('\r\n');
   const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
-  const filename = type === 'items' ? `在庫一覧_${today}.csv` : type === 'sold' ? `販売履歴_${today}.csv` : `フリマ管理_全件_${today}.csv`;
-  a.href = url; a.download = filename; a.click();
-  URL.revokeObjectURL(url);
-  document.getElementById('export-modal').classList.remove('open');
-  showToast(filename + ' を書き出しました');
+  a.href = url;
+  a.download = `フリマ管理_${today}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(()=>URL.revokeObjectURL(url), 1000);
+
+  // exportedItems へ移動 + 1件ずつ履歴を記録
+  const {date, time} = nowStr();
+  target.forEach(item => {
+    const exported = {...item, exportedDate: date, exportedTime: time};
+    exportedItems.push(exported);
+    historyLog.push({
+      hid: nextHid++,
+      action: 'export',
+      item: {...exported},
+      date, time,
+      undone: false
+    });
+  });
+  items = items.filter(i => !checkedList.has(i.id));
+  checkedList.clear();
+  save(); render();
+  showToast(target.length + '件をCSV書き出ししました');
 }
+
+// --- Bulk delete (書き出し済みページ) ---
+function bulkDelete(){
+  if(!checkedExp.size) return;
+  if(!confirm(checkedExp.size + '件を削除しますか？\n（操作履歴から元に戻せます）')) return;
+
+  const target = exportedItems.filter(i => checkedExp.has(i.id));
+  const {date, time} = nowStr();
+  target.forEach(item => {
+    historyLog.push({
+      hid: nextHid++,
+      action: 'del',
+      item: {...item},
+      date, time,
+      undone: false
+    });
+  });
+  exportedItems = exportedItems.filter(i => !checkedExp.has(i.id));
+  checkedExp.clear();
+  save(); render();
+  showToast(target.length + '件を削除しました');
+}
+
+// --- Undo (1件ずつ) ---
+function undoEntry(hid){
+  const entry = historyLog.find(h => h.hid === hid);
+  if(!entry || entry.undone || entry.action === 'undo' || !entry.item) return;
+
+  const id = entry.item.id;
+  let ok = false;
+
+  if(entry.action === 'add'){
+    // どこにあっても削除（在庫 or 書出済）
+    const beforeI = items.length, beforeE = exportedItems.length;
+    items = items.filter(i => i.id !== id);
+    exportedItems = exportedItems.filter(i => i.id !== id);
+    ok = items.length < beforeI || exportedItems.length < beforeE;
+  } else if(entry.action === 'export'){
+    // 書出済から在庫へ戻す
+    const found = exportedItems.find(i => i.id === id);
+    if(found){
+      const restored = {...found};
+      delete restored.exportedDate;
+      delete restored.exportedTime;
+      exportedItems = exportedItems.filter(i => i.id !== id);
+      items.unshift(restored);
+      ok = true;
+    }
+  } else if(entry.action === 'del'){
+    // 削除を取り消して書出済に復元（既に存在していればスキップ）
+    const exists = exportedItems.find(i => i.id === id) || items.find(i => i.id === id);
+    if(!exists){
+      exportedItems.push({...entry.item});
+      ok = true;
+    }
+  }
+
+  if(!ok){
+    showToast('元に戻せませんでした');
+    return;
+  }
+
+  entry.undone = true;
+  const {date, time} = nowStr();
+  historyLog.push({
+    hid: nextHid++,
+    action: 'undo',
+    item: {...entry.item},
+    date, time,
+    undone: false
+  });
+  save(); render();
+  showToast('「' + (entry.item.code||'') + '」を元に戻しました');
+}
+
+function clearHist(){
+  if(!confirm('操作履歴をすべて削除しますか？')) return;
+  historyLog = [];
+  save();
+  renderHist();
+}
+
+// --- Listeners ---
+document.getElementById('m-code').addEventListener('keydown', e => { if(e.key === 'Enter') addItem(); });
+document.getElementById('m-price').addEventListener('keydown', e => { if(e.key === 'Enter') addItem(); });
+document.getElementById('m-other-name').addEventListener('keydown', e => { if(e.key === 'Enter') document.getElementById('m-code').focus(); });
+document.getElementById('m-shipping-other').addEventListener('keydown', e => { if(e.key === 'Enter') document.getElementById('m-price').focus(); });
+document.addEventListener('keydown', e => { if(e.key === 'Escape') closeModal(); });
+
 render();
 </script>
 </body>
